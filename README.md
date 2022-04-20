@@ -1,0 +1,2 @@
+Baixar pacotes
+- npm i
