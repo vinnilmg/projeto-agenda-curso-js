@@ -1,11 +1,13 @@
 const Login = require('../models/LoginModel');
 
 exports.index = (req, res) => {
-    res.render('login');
+
+    if (req.session.user) return res.render('logado');
+
+    return res.render('login');
 };
 
 exports.register = async (req, res) => {
-
     try {
         const login = new Login(req.body);
         await login.register();
@@ -27,3 +29,31 @@ exports.register = async (req, res) => {
         return res.render('error'); // renderiza pagina de erro
     }
 };
+
+exports.logar = async function (req, res) {
+    try {
+        const login = new Login(req.body);
+        await login.logarNoSistema();
+
+        if (!login.user) {
+            req.flash('errors', login.errors);
+        } else {
+            req.flash('success', 'Bem vindo! Você está ONLINE no sistema!');
+            req.session.user = login.user;
+        }
+
+        // salva seção e redireciona pagina
+        req.session.save(function() {
+            return res.redirect('/login/index');
+        });
+
+    } catch(e) {
+        console.log(e);
+        return res.render('error');
+    }
+};
+
+exports.sair = function (req, res) {
+    req.session.destroy(); // remove sessao
+    res.redirect('/');
+}

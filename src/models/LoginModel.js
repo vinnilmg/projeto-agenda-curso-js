@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const { geraHash } = require('../utils/utils');
+const { geraHash, comparaHash } = require('../utils/utils');
 
 const LoginSchema = new mongoose.Schema({
     email: { type: String, required: true },
@@ -16,25 +16,42 @@ class Login {
         this.user = null;
     }
 
+    async logarNoSistema() {
+        this.validaFormulario();
+
+        if (this.errors.length > 0) return;
+
+        this.user = await LoginModel.findOne({ email: this.body.email });
+
+        if (!this.user) {
+            this.errors.push('Usuário ou senha inválidos');
+            return;
+        }
+
+        // compara senha enviada com o hash da base
+        if(!comparaHash(this.body.senha, this.user.senha)) {
+            this.errors.push('Senha inválida.');
+            this.user = null;
+            return;
+        }
+    }
+
     async register() {
         this.validaFormulario();
         await this.usuarioExiste();
 
         if (this.errors.length > 0) return; // retorna pois tem algum erro
         
-        try {
-            this.body.senha = geraHash(this.body.senha); // hash gerado pelo bcrypt
+        this.body.senha = geraHash(this.body.senha); // hash gerado pelo bcrypt
 
-            this.user = await LoginModel.create(this.body);
-        } catch (err) {
-            console.log(err) ;
-        }   
+        // cria no banco
+        this.user = await LoginModel.create(this.body); 
     }
 
     async usuarioExiste() {
         const user = await LoginModel.findOne({ email: this.body.email });
 
-        if (user) this.errors.push('Usuário já registrado.')
+        if (user) this.errors.push('Usuário já registrado.');
     }
 
     validaFormulario() {

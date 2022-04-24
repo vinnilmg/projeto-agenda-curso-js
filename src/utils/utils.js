@@ -6,3 +6,7 @@ exports.geraHash = (valor) => {
 
     return hashGerado;
 };
+
+exports.comparaHash = (valor, hash) => {
+    return bcryptjs.compareSync(valor, hash);
+};

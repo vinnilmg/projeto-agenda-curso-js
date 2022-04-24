@@ -8,8 +8,10 @@ const route = express.Router();
 route.get('/', homeController.index);
 
 // Rotas de login
-route.get('/login/index', loginController.index)
-route.post('/login/register', loginController.register)
+route.get('/login/index', loginController.index);
+route.post('/login/register', loginController.register);
+route.post('/login/logar', loginController.logar);
+route.get('/login/sair', loginController.sair);
 
 
 module.exports = route;
