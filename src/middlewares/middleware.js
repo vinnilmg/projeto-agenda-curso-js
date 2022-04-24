@@ -14,3 +14,9 @@ exports.CSRFTokenMiddleware = (req, res, next) => {
     res.locals.csrfToken = req.csrfToken();
     next();
 };
+
+exports.insereParametrosPaginas = (req, res, next) => {
+    res.locals.errors = req.flash('errors');
+    res.locals.success = req.flash('success');
+    next();
+};

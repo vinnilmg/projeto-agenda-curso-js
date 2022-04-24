@@ -5,7 +5,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const routes = require('./routes');
-const { renderizaErrorPage, CSRFTokenMiddleware } = require('./src/middlewares/middleware');
+const { renderizaErrorPage, CSRFTokenMiddleware, insereParametrosPaginas } = require('./src/middlewares/middleware');
 
 // Session e Flash-messages
 const session = require('express-session');
@@ -61,6 +61,7 @@ app.use(flash()); // flash-messages
 app.use(csrf());
 
 // utilizando meu middleware global que criei
+app.use(insereParametrosPaginas);
 app.use(renderizaErrorPage);
 app.use(CSRFTokenMiddleware);
 
