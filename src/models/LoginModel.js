@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const { geraHash } = require('../utils/utils');
 
 const LoginSchema = new mongoose.Schema({
     email: { type: String, required: true },
@@ -17,15 +18,23 @@ class Login {
 
     async register() {
         this.validaFormulario();
+        await this.usuarioExiste();
 
-        if (this.errors.length > 0) return; // tem erro
+        if (this.errors.length > 0) return; // retorna pois tem algum erro
         
         try {
-            // passou sem erro e agora vai criar o usuário na base
+            this.body.senha = geraHash(this.body.senha); // hash gerado pelo bcrypt
+
             this.user = await LoginModel.create(this.body);
         } catch (err) {
             console.log(err) ;
         }   
+    }
+
+    async usuarioExiste() {
+        const user = await LoginModel.findOne({ email: this.body.email });
+
+        if (user) this.errors.push('Usuário já registrado.')
     }
 
     validaFormulario() {
