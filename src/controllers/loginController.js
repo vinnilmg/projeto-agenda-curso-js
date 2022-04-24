@@ -13,18 +13,15 @@ exports.register = async (req, res) => {
         // exibir mensagens
         if (login.errors.length > 0) {
             req.flash('errors', login.errors);
-
-            // salva seção
-            req.session.save(function() {
-                return res.redirect('/login/index'); // volta o formulario de onde ele veio
-            });
-            return;
+        } else {
+            req.flash('success', 'Usuário criado com sucesso.');
         }
 
-        req.flash('success', 'Usuário criado com sucesso.');
+        // salva seção e redireciona pagina
         req.session.save(function() {
             return res.redirect('/login/index');
         });
+
     } catch(e) {
         console.log(e);
         return res.render('error'); // renderiza pagina de erro
