@@ -55,5 +55,5 @@ exports.logar = async function (req, res) {
 
 exports.sair = function (req, res) {
     req.session.destroy(); // remove sessao
-    res.redirect('/');
-}
+    return res.redirect('/');
+};
